@@ -1,0 +1,15 @@
+Name,PosX,PosY,PosZ,RotX,RotY,RotZ,ScaleX,ScaleY,ScaleZ,GroupID
+Player,3,0,3,0,0,0,1,1,1,0
+EnemyMelee,6,0,55.5,0,0,0,1,1,1,1
+EnemyMelee,0,0,55.5,0,0,0,1,1,1,1
+EnemyMelee,-40,0,75,0,-90,0,1,1,1,2
+EnemyMelee,-40,0,87,0,-90,0,1,1,1,2
+EnemyMelee,-87,0,120,0,0,0,1,1,1,3
+EnemyMelee,-81,0,120,0,0,0,1,1,1,3
+EnemyMelee,-75,0,120,0,0,0,1,1,1,3
+EnemyFly,-45,3,87,0,-90,0,1,1,1,2
+EnemyFly,-45,3,75,0,-90,0,1,1,1,2
+EnemyFly,-81,3,133,0,0,0,1,1,1,3
+EnemyFly,-87,3,130,0,0,0,1,1,1,3
+EnemyFly,-75,3,130,0,0,0,1,1,1,3
+Boss,-81,0,201,0,0,0,1,1,1,0
