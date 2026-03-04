@@ -11,7 +11,7 @@ SoundManager& SoundManager::GetInstance()
 void SoundManager::Init()
 {
     // BGM読み込み
-    m_bgmHandles["Title"]    = LoadSoundMem("Data/Sound/BGM/Title.mp3");
+    m_bgmHandles["Title"]    = LoadSoundMem("Data/Sound/BGM/TitleBGM.mp3");
     m_bgmHandles["Game"]     = LoadSoundMem("Data/Sound/BGM/GameBGM.mp3");
     m_bgmHandles["Result"]   = LoadSoundMem("Data/Sound/BGM/ResultBGM.mp3");
     m_bgmHandles["GameOver"] = LoadSoundMem("Data/Sound/BGM/GameOver.mp3");

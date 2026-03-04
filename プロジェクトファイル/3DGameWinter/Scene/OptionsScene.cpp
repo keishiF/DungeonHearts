@@ -26,9 +26,9 @@ namespace
     constexpr int kSliderValueMax = 10;
 }
 
-OptionsScene::OptionsScene(SceneController& controller, OptionMode mode) : 
-    SceneBase(controller), 
-    m_options(Options::GetInstance()), 
+OptionsScene::OptionsScene(SceneController& controller, OptionMode mode) :
+    SceneBase(controller),
+    m_options(Options::GetInstance()),
     m_mode(mode)
 {
     m_options.Load();
@@ -125,10 +125,14 @@ void OptionsScene::UpdateMainMenu()
 
         if (type == MainType::Camera || type == MainType::Sound)
         {
+            // 決定音
+            sound.PlaySE("Button");
             m_inSubMenu = true;
         }
         else
         {
+            // 決定音
+            sound.PlaySE("Button");
             if (type == MainType::Back)
             {
                 if (m_mode == OptionMode::FromTitle)
@@ -175,15 +179,18 @@ void OptionsScene::UpdateSubMenu()
 void OptionsScene::UpdateCamera()
 {
     auto& input = Input::GetInstance();
+    auto& sound = SoundManager::GetInstance();
 
     if (input.IsTrigger("Up"))
     {
         m_cameraSel = max(0, m_cameraSel - 1);
+        sound.PlaySE("Cursor");
     }
 
     if (input.IsTrigger("Down"))
     {
         m_cameraSel = min(1, m_cameraSel + 1);
+        sound.PlaySE("Cursor");
     }
 
     if (input.IsTrigger("Left") ||
@@ -198,6 +205,8 @@ void OptionsScene::UpdateCamera()
         {
             m_options.invertY = !m_options.invertY;
         }
+        // 変更音
+        sound.PlaySE("Button");
     }
 }
 
@@ -209,11 +218,13 @@ void OptionsScene::UpdateSound()
     if (input.IsTrigger("Up"))
     {
         m_soundSel = max(0, m_soundSel - 1);
+        sound.PlaySE("Cursor");
     }
 
     if (input.IsTrigger("Down"))
     {
         m_soundSel = min(2, m_soundSel + 1);
+        sound.PlaySE("Cursor");
     }
 
     int delta = 0;
@@ -234,6 +245,8 @@ void OptionsScene::UpdateSound()
     display = std::clamp(display + delta, 0, kSliderValueMax);
     *target = display * Options::VolumeStep;
 
+    // スライダー調整音
+    sound.PlaySE("Button");
     sound.ApplyVolume();
 }
 

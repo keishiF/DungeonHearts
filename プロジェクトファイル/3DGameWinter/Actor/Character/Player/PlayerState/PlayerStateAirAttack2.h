@@ -12,5 +12,6 @@ public:
 private:
 	int m_atkSE = -1;
 	bool m_isCombo = false;
+	bool m_hasPlayedAtkSE = false;
 };
 

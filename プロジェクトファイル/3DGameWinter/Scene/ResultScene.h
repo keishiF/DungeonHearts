@@ -8,17 +8,16 @@ class Camera;
 class SceneBase;
 class SkyDome;
 class UIManager;
-class ResultScene final: public SceneBase
+class ResultScene final : public SceneBase
 {
 public:
-    ResultScene(SceneController& controller, const ScoreData& scoreData);
-    virtual ~ResultScene();
+	ResultScene(SceneController& controller, const ScoreData& scoreData);
+	virtual ~ResultScene();
 
-    virtual void Update() override;
-    virtual void Draw() override;
+	virtual void Update() override;
+	virtual void Draw() override;
 
 private:
-	int m_bgmHandle;
 	int m_fadeFrame;
 	int m_blinkFrame;
 	int m_restartButtonImg;
@@ -66,14 +65,14 @@ private:
 	ScoreData m_finalScore;
 	ScoreData m_displayScore;
 	int m_waitTimer;
-	
+
 	int m_bgHandle;
 	int m_clearHandle;
 	int m_fontHandle;
-	
+
 	// 更新処理
 	void CountUpUpdate();
-	
+
 	// 描画処理
 	void UpdateScore();
 };

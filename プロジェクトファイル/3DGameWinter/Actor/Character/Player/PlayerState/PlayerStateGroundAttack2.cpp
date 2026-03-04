@@ -33,6 +33,7 @@ void PlayerStateGroundAttack2::OnEntry()
 	printf("プレイヤー：地上攻撃2段目状態エントリー\n");
 	m_atkSE = LoadSoundMem("Data/Sound/SE/PlayerAtkSE.mp3");
 	assert(m_atkSE >= 0);
+	m_hasPlayedAtkSE = false;
 	player->GetAnimator().ChangeAnim(kGroundAtk2AnimName, kGroundAtk2AnimSpeed, false);
 }
 
@@ -87,7 +88,12 @@ void PlayerStateGroundAttack2::OnUpdate(std::shared_ptr<Camera> camera)
 
 	// 武器の当たり判定を有効化/無効化
 	bool isWeaponActive = (currentAnimFrame >= kAttackStartFrame && currentAnimFrame <= kAttackEndFrame);
-	PlaySoundMem(m_atkSE, DX_PLAYTYPE_BACK);
+	// 再生は攻撃判定が有効なフレームで一度だけ行う
+	if (isWeaponActive && !m_hasPlayedAtkSE)
+	{
+		PlaySoundMem(m_atkSE, DX_PLAYTYPE_BACK);
+		m_hasPlayedAtkSE = true;
+	}
 	player->GetWeapon()->Update(isWeaponActive, 0, 10);
 
 	auto& input = Input::GetInstance();
@@ -105,7 +111,7 @@ void PlayerStateGroundAttack2::OnUpdate(std::shared_ptr<Camera> camera)
 		{
 			m_machine.lock()->ChangeState(std::make_shared<PlayerStateGroundAttack3>());
 		}
-		else if (input.IsPress("Up")   || input.IsPress("Right") ||
+		else if (input.IsPress("Up") || input.IsPress("Right") ||
 				 input.IsPress("Down") || input.IsPress("Left"))
 		{
 			m_machine.lock()->ChangeState(std::make_shared<PlayerStateRun>());

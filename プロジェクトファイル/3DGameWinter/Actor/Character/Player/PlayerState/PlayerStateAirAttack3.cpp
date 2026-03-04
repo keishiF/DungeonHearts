@@ -32,6 +32,7 @@ void PlayerStateAirAttack3::OnEntry()
 	printf("プレイヤー：空中攻撃3段目状態エントリー\n");
 	m_atkSE = LoadSoundMem("Data/Sound/SE/PlayerAtkSE.mp3");
 	assert(m_atkSE >= 0);
+	m_hasPlayedAtkSE = false;
 	player->GetRigidbody().SetGravity(false);
 	player->GetRigidbody().SetVelo(Vector3());
 	player->GetAnimator().ChangeAnim(kAirAtk3AnimName, kAirAtk3AnimSpeed, false);
@@ -96,7 +97,12 @@ void PlayerStateAirAttack3::OnUpdate(std::shared_ptr<Camera> camera)
 
 	// 武器の当たり判定を有効化/無効化
 	bool isWeaponActive = (currentAnimFrame >= kAttackStartFrame && currentAnimFrame <= kAttackEndFrame);
-	PlaySoundMem(m_atkSE, DX_PLAYTYPE_BACK);
+	// 再生は攻撃判定が有効なフレームで一度だけ行う
+	if (isWeaponActive && !m_hasPlayedAtkSE)
+	{
+		PlaySoundMem(m_atkSE, DX_PLAYTYPE_BACK);
+		m_hasPlayedAtkSE = true;
+	}
 	player->GetWeapon()->Update(isWeaponActive, 0, 10);
 
 

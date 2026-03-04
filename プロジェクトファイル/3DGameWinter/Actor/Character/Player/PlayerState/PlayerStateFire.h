@@ -13,8 +13,8 @@ public:
 	void OnLeave() override;
 
 private:
-	int m_fireSE = -1;
 	int m_frame = 0;
 	bool m_isAttacked = false;
+	bool m_hasPlayedFireSE = false;
 };
 

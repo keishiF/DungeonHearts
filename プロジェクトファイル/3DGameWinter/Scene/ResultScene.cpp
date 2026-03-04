@@ -6,6 +6,7 @@
 #include "SceneController.h"
 #include "TitleScene.h"
 #include "UI/UIManager.h"
+#include "MyLib/SoundManager.h"
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -21,9 +22,8 @@ namespace
 	constexpr int kWaitTime = 120;
 }
 
-ResultScene::ResultScene(SceneController& controller, const ScoreData& scoreData):
+ResultScene::ResultScene(SceneController& controller, const ScoreData& scoreData) :
 	SceneBase(controller),
-	m_bgmHandle(-1),
 	m_fadeFrame(kFadeInterval),
 	m_blinkFrame(0),
 	m_restartButtonImg(-1),
@@ -36,10 +36,8 @@ ResultScene::ResultScene(SceneController& controller, const ScoreData& scoreData
 	m_displayScore(),
 	m_waitTimer(0)
 {
-	m_bgmHandle = LoadSoundMem("Data/Sound/BGM/ResultBGM.mp3");
-	assert(m_bgmHandle > 0);
-	ChangeVolumeSoundMem(128, m_bgmHandle);
-	PlaySoundMem(m_bgmHandle, DX_PLAYTYPE_LOOP);
+	// SoundManager を使って BGM を再生
+	SoundManager::GetInstance().PlayBGM("Result");
 
 	m_restartButtonImg = LoadGraph("Data/UI/Result/ReStart0.png");
 	assert(m_restartButtonImg >= 0);
@@ -51,17 +49,16 @@ ResultScene::ResultScene(SceneController& controller, const ScoreData& scoreData
 
 	m_clearHandle = LoadGraph("Data/UI/Result/GameClear.png");
 	assert(m_clearHandle >= 0);
-	
+
 	m_fontHandle = CreateFontToHandle("Impact", 60, 3, DX_FONTTYPE_ANTIALIASING_EDGE);
 	assert(m_fontHandle >= 0);
 }
 
 ResultScene::~ResultScene()
 {
-	if (m_bgmHandle > 0)
-	{
-		DeleteSoundMem(m_bgmHandle);
-	}
+	// BGM は SoundManager 側で管理する
+	SoundManager::GetInstance().StopBGM();
+
 	DeleteGraph(m_bgHandle);
 	DeleteFontToHandle(m_fontHandle);
 	DeleteGraph(m_restartButtonImg);
@@ -103,7 +100,8 @@ void ResultScene::FadeOutUpdate()
 {
 	if (m_fadeFrame++ >= kFadeInterval)
 	{
-		StopSoundMem(m_bgmHandle);
+		// BGM を停止して遷移
+		SoundManager::GetInstance().StopBGM();
 		m_controller.ChangeScene(m_nextScene);
 
 		// 自分が死んでいるのでもし余計な処理が入っているとまずいのでreturn;
@@ -129,28 +127,22 @@ void ResultScene::NormalDraw()
 	const int totalScoreYOffset = 40;
 
 	int color = GetColor(255, 255, 255);
-	/*DrawStringToHandle(350, 200, "TIME  SCORE", color, m_fontHandle);
-	DrawFormatStringToHandle(750, 200, color, m_fontHandle, "%7d", m_displayScore.timeScore);*/
-	DrawStringToHandle(labelX, baseY, 
+	DrawStringToHandle(labelX, baseY,
 		"TIME  SCORE", color, m_fontHandle);
-	DrawFormatStringToHandle(scoreX, baseY, 
-		color, m_fontHandle, 
+	DrawFormatStringToHandle(scoreX, baseY,
+		color, m_fontHandle,
 		"%7d", m_displayScore.timeScore);
 
-	/*DrawStringToHandle(350, 300, "KILL  SCORE", color, m_fontHandle);
-	DrawFormatStringToHandle(750, 300, color, m_fontHandle, "%7d", m_displayScore.killScore);*/
-	DrawStringToHandle(labelX, baseY + lineHeight, 
+	DrawStringToHandle(labelX, baseY + lineHeight,
 		"KILL  SCORE", color, m_fontHandle);
-	DrawFormatStringToHandle(scoreX, baseY + lineHeight, 
+	DrawFormatStringToHandle(scoreX, baseY + lineHeight,
 		color, m_fontHandle,
 		"%7d", m_displayScore.killScore);
 
-	/*DrawStringToHandle(350, 450, "TOTAL SCORE", color, m_fontHandle);
-	DrawFormatStringToHandle(750, 450, color, m_fontHandle, "%7d", m_displayScore.totalScore);*/
-	DrawStringToHandle(labelX, baseY + lineHeight * 2, 
+	DrawStringToHandle(labelX, baseY + lineHeight * 2,
 		"TOTAL SCORE", color, m_fontHandle);
 	DrawFormatStringToHandle(scoreX, baseY + lineHeight * 2,
-		color, m_fontHandle, 
+		color, m_fontHandle,
 		"%7d", m_displayScore.totalScore);
 
 	if (m_state == State::Wait)
@@ -200,7 +192,7 @@ void ResultScene::FadeDraw()
 void ResultScene::CountUpUpdate()
 {
 	auto& input = Input::GetInstance();
-	
+
 	UpdateScore();
 
 	if (m_state == State::Wait)
@@ -217,8 +209,9 @@ void ResultScene::CountUpUpdate()
 		// 決定ボタンでシーン遷移
 		if (input.IsTrigger("Attack"))
 		{
-			StopSoundMem(m_bgmHandle);
-			
+			// BGM 停止は SoundManager 経由
+			SoundManager::GetInstance().StopBGM();
+
 			if (m_selectedButton == SelectedButton::Restart)
 			{
 				m_nextScene = std::make_shared<GameScene>(m_controller);
@@ -227,7 +220,7 @@ void ResultScene::CountUpUpdate()
 			{
 				m_nextScene = std::make_shared<TitleScene>(m_controller);
 			}
-			StopSoundMem(m_bgmHandle);
+			SoundManager::GetInstance().StopBGM();
 			m_update = &ResultScene::FadeOutUpdate;
 			m_draw = &ResultScene::FadeDraw;
 			m_fadeFrame = 0;
@@ -261,7 +254,7 @@ void ResultScene::UpdateScore()
 		{
 			m_displayScore.totalScore = m_finalScore.totalScore;
 			m_state = State::Wait;
-			}
+		}
 		break;
 	case State::Wait:
 		// 入力待ち

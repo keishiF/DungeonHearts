@@ -10,6 +10,7 @@
 #include "PlayerStateIdle.h"
 #include "PlayerStateRun.h"
 #include "PlayerStateThunder.h"
+#include "MyLib/SoundManager.h"
 
 namespace
 {
@@ -38,10 +39,7 @@ PlayerStateFire::PlayerStateFire()
 
 PlayerStateFire::~PlayerStateFire()
 {
-	if (m_fireSE != -1)
-	{
-		DeleteSoundMem(m_fireSE);
-	}
+	// もうサウンドハンドルをここで削除しない（SoundManager が管理）
 }
 
 void PlayerStateFire::OnEntry()
@@ -51,8 +49,7 @@ void PlayerStateFire::OnEntry()
 	printf("プレイヤー：炎攻撃状態エントリー\n");
 	m_frame = 0;
 	m_isAttacked = false;
-	m_fireSE = LoadSoundMem("Data/Sound/SE/FireSE.mp3");
-	assert(m_fireSE >= 0);
+	m_hasPlayedFireSE = false;
 	player->GetAnimator().ChangeAnim(kFireAnimName, kFireAnimSpeed, false);
 }
 
@@ -70,32 +67,6 @@ void PlayerStateFire::OnUpdate(std::shared_ptr<Camera> camera)
 	const Vector3& camRight = camera->GetRight();
 
 	Vector3 moveDir = { 0.0f, 0.0f, 0.0f };
-
-	//auto& input = Input::GetInstance();
-	//if (input.IsPress("Up"))
-	//{
-	//	moveDir += camForward;
-	//}
-	//else if (input.IsPress("Down"))
-	//{
-	//	moveDir -= camForward;
-	//}
-
-	//if (input.IsPress("Right"))
-	//{
-	//	moveDir += camRight;
-	//}
-	//else if (input.IsPress("Left"))
-	//{
-	//	moveDir -= camRight;
-	//}
-
-	//// 移動入力がある場合
-	//if (moveDir.SqrLength() > 0.0f)
-	//{
-	//	moveDir.Normalize();
-	//	player->GetRigidbody().SetVelo(moveDir * kMoveSpeed);
-	//}
 
 	// ロックオン中の敵がいる場合、その方向を向く
 	if (player->IsLockOn() && player->GetLockedOnEnemy())
@@ -125,10 +96,10 @@ void PlayerStateFire::OnUpdate(std::shared_ptr<Camera> camera)
 		if (++m_frame >= kTiming)
 		{
 			m_isAttacked = true; // 発射処理を一度しか行わないようにする
-			
+
 			Vector3 targetPos;
 			bool targetFound = false;
-			
+
 			// プレイヤーがロックオン状態か確認
 			if (player->IsLockOn())
 			{
@@ -149,7 +120,7 @@ void PlayerStateFire::OnUpdate(std::shared_ptr<Camera> camera)
 					}
 				}
 			}
-			
+
 			// ロックオンしていない場合、プレイヤーの正面を目標に設定
 			if (!targetFound)
 			{
@@ -157,16 +128,20 @@ void PlayerStateFire::OnUpdate(std::shared_ptr<Camera> camera)
 				Vector3 playerForward = moveDir.SqrLength() > 0.0f ? moveDir : camForward;
 				targetPos = player->GetPos() + playerForward * kFireRange;
 			}
-			
+
 			// Fireを生成
-			PlaySoundMem(m_fireSE, DX_PLAYTYPE_BACK);
+			if (!m_hasPlayedFireSE)
+			{
+				SoundManager::GetInstance().PlaySE("Fire");
+				m_hasPlayedFireSE = true;
+			}
 			auto fire = std::make_shared<Fire>(ObjectTag::PlayerWeapon);
 			Vector3 playerPos = player->GetPos();
-			
+
 			// 魔法の発生位置と目標の高さを少し上に調整（地面から浮かす）
 			playerPos.y += 100.0f;
 			targetPos.y += 100.0f;
-			
+
 			fire->Init(playerPos, targetPos, kDurationFrame, kAtk);
 			actorController->SpawnAttack(fire);
 		}

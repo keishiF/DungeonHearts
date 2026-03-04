@@ -15,19 +15,22 @@ namespace
 }
 
 BossBullet::BossBullet() :
-	Attack(ObjectTag::EnemyWeapon, ColliderData::Kind::Sphere)
+    Attack(ObjectTag::EnemyWeapon, ColliderData::Kind::Sphere)
 {
 }
 
 BossBullet::~BossBullet()
 {
+    // 再生中のエフェクトを停止してからリソースを解放する
+    if (m_playingEffect != -1)
+    {
+        StopEffekseer3DEffect(m_playingEffect);
+        m_playingEffect = -1;
+    }
     if (m_bulletEffect != -1)
     {
         DeleteEffekseerEffect(m_bulletEffect);
-    }
-    if (m_playingEffect != -1)
-    {
-        DeleteEffekseerEffect(m_bulletEffect);
+        m_bulletEffect = -1;
     }
 }
 
@@ -79,6 +82,11 @@ void BossBullet::Update()
     if (m_timer >= m_durationTime)
     {
         m_isDead = true;
+        if (m_playingEffect != -1)
+        {
+            StopEffekseer3DEffect(m_playingEffect);
+            m_playingEffect = -1;
+        }
     }
 }
 
@@ -90,6 +98,9 @@ void BossBullet::OnCollide(std::shared_ptr<Collidable> collider)
 {
     if (m_isDead) return;
     m_isDead = true;
-    StopEffekseer3DEffect(m_playingEffect);
-    m_playingEffect = -1;
+    if (m_playingEffect != -1)
+    {
+        StopEffekseer3DEffect(m_playingEffect);
+        m_playingEffect = -1;
+    }
 }

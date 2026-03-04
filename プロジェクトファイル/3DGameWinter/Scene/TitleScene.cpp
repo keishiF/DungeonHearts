@@ -9,6 +9,7 @@
 #include "GameScene.h"
 #include "MyLib/Input.h"
 #include "MyLib/Physics/Physics.h"
+#include "MyLib/SoundManager.h"
 #include "OptionsScene.h"
 #include "SceneController.h"
 #include <cassert>
@@ -40,10 +41,8 @@ TitleScene::TitleScene(SceneController& controller) :
 
 	m_menuSel = MenuItem::Start;
 
-	m_bgmHandle = LoadSoundMem("Data/Sound/BGM/TitleBGM.mp3");
-	assert(m_bgmHandle > 0);
-	ChangeVolumeSoundMem(128, m_bgmHandle);
-	PlaySoundMem(m_bgmHandle, DX_PLAYTYPE_LOOP);
+	// Use SoundManager to play title BGM so volume settings are applied globally
+	SoundManager::GetInstance().PlayBGM("Title", true);
 
 	m_titleHandle = LoadGraph("Data/UI/Title/Title.png");
 	assert(m_titleHandle >= 0);
@@ -54,8 +53,8 @@ TitleScene::TitleScene(SceneController& controller) :
 	m_startButtonImg = LoadGraph("Data/UI/Title/Start0.png");
 	assert(m_startButtonImg >= 0);
 
-	const char* characterDataPath  = "Data/CSV/Title/CharacterDataTitle.csv";
-	const char* stageDataPath	   = "Data/CSV/Title/StageObjectDataTitle.csv";
+	const char* characterDataPath = "Data/CSV/Title/CharacterDataTitle.csv";
+	const char* stageDataPath = "Data/CSV/Title/StageObjectDataTitle.csv";
 	const char* spawnPointDataPath = "Data/CSV/Title/SpawnPoint.csv";
 	m_actorManager = std::make_shared<ActorController>();
 	m_actorManager->Init(characterDataPath, stageDataPath, spawnPointDataPath);
@@ -78,10 +77,7 @@ TitleScene::~TitleScene()
 	DeleteGraph(m_optionButtonImg);
 	DeleteGraph(m_exitButtonImg);
 	DeleteGraph(m_cursorImg);
-	if (m_bgmHandle > 0)
-	{
-		DeleteSoundMem(m_bgmHandle);
-	}
+	// SoundManager owns and releases BGM handles, do not delete here
 	DeleteGraph(m_titleHandle);
 	DeleteGraph(m_startButtonImg);
 	DeleteFontToHandle(m_fontHandle);
@@ -125,6 +121,8 @@ void TitleScene::NormalUpdate()
 			% static_cast<int>(MenuItem::Max);
 
 		m_menuSel = static_cast<MenuItem>(v);
+		// カーソル移動 SE
+		SoundManager::GetInstance().PlaySE("Cursor");
 	}
 
 	if (input.IsTrigger("Right"))
@@ -133,6 +131,8 @@ void TitleScene::NormalUpdate()
 			% static_cast<int>(MenuItem::Max);
 
 		m_menuSel = static_cast<MenuItem>(v);
+		// カーソル移動 SE
+		SoundManager::GetInstance().PlaySE("Cursor");
 	}
 
 	if (input.IsTrigger("Attack"))
@@ -140,6 +140,8 @@ void TitleScene::NormalUpdate()
 		switch (m_menuSel)
 		{
 		case MenuItem::Option:
+			// 決定音
+			SoundManager::GetInstance().PlaySE("Button");
 			Input::GetInstance().ClearTriggers();
 			m_controller.PushScene(
 				std::make_shared<OptionsScene>(m_controller, OptionMode::FromTitle));
@@ -147,7 +149,7 @@ void TitleScene::NormalUpdate()
 
 		case MenuItem::Start:
 
-			// 既存の歩行演出を開始
+			//既存の歩行演出を開始
 			if (!m_isStarting)
 			{
 				m_isStarting = true;
@@ -166,6 +168,8 @@ void TitleScene::NormalUpdate()
 			break;
 
 		case MenuItem::Exit:
+			// 決定音
+			SoundManager::GetInstance().PlaySE("Button");
 			DxLib_End();
 			return;
 		}
@@ -185,7 +189,8 @@ void TitleScene::FadeOutUpdate()
 {
 	if (m_fadeFrame++ >= kFadeInterval)
 	{
-		StopSoundMem(m_bgmHandle);
+		// Stop via SoundManager so options volumes are respected centrally
+		SoundManager::GetInstance().StopBGM();
 		m_controller.ChangeScene(std::make_shared<GameScene>(m_controller));
 
 		// 自分が死んでいるのでもし余計な処理が入っているとまずいのでreturn;
@@ -249,7 +254,7 @@ void TitleScene::NormalDraw()
 	auto DrawCursorRight = [&](int btnX, int btnY, int btnW, int btnH)
 		{
 			int cursorX = btnX + btnW - 50;
-			int cursorY = btnY + (btnH - cursorH) / 2; 
+			int cursorY = btnY + (btnH - cursorH) / 2;
 
 			DrawGraph(cursorX, cursorY, m_cursorImg, TRUE);
 		};
