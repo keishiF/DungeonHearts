@@ -1,0 +1,39 @@
+﻿#pragma once
+
+class Animator
+{
+public:
+	struct AnimData
+	{
+		int   attachNo  =   -1;
+		float frame     = 0.0f;
+		float playSpeed = 1.0f;
+		bool  isLoop    = false;
+		bool  isEnd     = false;
+	};
+
+	Animator();
+
+	void Init(int model);
+	void AttachAnim(AnimData& data, const char* animName, float playSpped, bool isLoop);
+	void UpdateAnim(AnimData& data);
+	void UpdateAnimBlend();
+	void ChangeAnim(const char* animName, float playSpeed, bool isLoop);
+
+	AnimData& GetNextAnim() { return m_nextAnim; }
+	AnimData& GetPrevAnim() { return m_prevAnim; }
+
+	float GetCurrentFrame() const;
+	float GetTotalFrame() const;
+	float GetAnimTransitionFrame() const;
+
+private:
+	AnimData m_nextAnim;
+	AnimData m_prevAnim;
+
+	// アニメーションを滑らかに変更するためのブレンド率
+	float m_blendRate;
+
+	int m_model;
+};
+
