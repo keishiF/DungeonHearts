@@ -7,6 +7,7 @@
 #include "Character/Enemy/MeleeNormal/MeleeNormal.h"
 #include "Character/Player/Player.h"
 #include "Attack/Attack.h"
+#include "MyLib/CharacterStatusLoader.h"
 #include "MyLib/Physics/Physics.h"
 #include "MyLib/TransformDataLoader.h"
 #include "Stage/StageController.h"
@@ -68,6 +69,9 @@ void ActorController::Init(const char* characterDataPath,
     const char* stageDataPath,
     const char* spawnGroupDataPath)
 {
+    // CSV をアプリ起動時に一度だけ読み込む（省略可）
+    CharacterStatusLoader::LoadFromFile("Data/CharacterStatus.csv");
+
     TransformDataLoader loader;
     auto transformDataList = loader.LoadDataCSV(characterDataPath);
 

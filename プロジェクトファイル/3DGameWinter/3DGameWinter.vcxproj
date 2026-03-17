@@ -212,6 +212,7 @@
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Core\Application.cpp" />
     <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="MyLib\CharacterStatusLoader.cpp" />
     <ClCompile Include="MyLib\HitStopManager.cpp" />
     <ClCompile Include="MyLib\Input.cpp" />
     <ClCompile Include="MyLib\Physics\Collider\CapsuleColliderData.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Core\Application.h" />
     <ClInclude Include="Core\game.h" />
+    <ClInclude Include="MyLib\CharacterStatusLoader.h" />
     <ClInclude Include="MyLib\HitStopManager.h" />
     <ClInclude Include="MyLib\Input.h" />
     <ClInclude Include="MyLib\Physics\Collider\CapsuleColliderData.h" />

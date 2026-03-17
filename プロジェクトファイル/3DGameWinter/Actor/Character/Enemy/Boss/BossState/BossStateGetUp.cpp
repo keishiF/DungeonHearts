@@ -4,12 +4,11 @@
 #include "Actor/Character/Enemy/Boss/Boss.h"
 #include "Actor/Character/Player/Player.h"
 #include "BossStateIdle.h"
+#include "MyLib/CharacterStatusLoader.h"
 #include <EffekseerForDXLib.h>
 
 namespace
 {
-	constexpr float kHp = 15.0f;
-
 	const char* kGetUpAnimName = "TransitionIdle1ToIdle3";
 	const char* kRoarAnimName = "Roar";
 
@@ -41,8 +40,10 @@ void BossStateGetUp::OnUpdate(std::shared_ptr<Camera> camera)
 
 	if (m_isRoar)
 	{
-		boss->SetHp(kHp);
-		boss->SetMaxHp(kHp);
+		// CSV から Boss のステータスを読み込んで設定
+		auto status = CharacterStatusLoader::GetStatus("Boss");
+		boss->SetHp(status.m_hp);
+		boss->SetMaxHp(status.m_maxHp);
 		if (boss->GetAnimator().GetNextAnim().isEnd)
 		{
 			m_machine.lock()->ChangeState(std::make_shared<BossStateIdle>());

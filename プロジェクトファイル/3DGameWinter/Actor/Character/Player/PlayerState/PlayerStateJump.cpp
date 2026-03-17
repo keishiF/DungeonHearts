@@ -11,8 +11,6 @@
 
 namespace
 {
-    // 空中移動速度
-    constexpr float kAirMoveSpeed = 8.5f;
     // ジャンプ力
     constexpr float kJumpForce = 20.0f;
     // ジャンプ力を加えるタイミング
@@ -66,8 +64,11 @@ void PlayerStateJump::OnUpdate(std::shared_ptr<Camera> camera)
     if (moveDir.SqrLength() > 0.0f)
     {
         moveDir.Normalize();
-        finalVelo.x = moveDir.x * kAirMoveSpeed;
-        finalVelo.z = moveDir.z * kAirMoveSpeed;
+
+        float airMoveSpeed = player->GetStatusComp().m_airSpeed;
+
+        finalVelo.x = moveDir.x * airMoveSpeed;
+        finalVelo.z = moveDir.z * airMoveSpeed;
     }
     else
     {

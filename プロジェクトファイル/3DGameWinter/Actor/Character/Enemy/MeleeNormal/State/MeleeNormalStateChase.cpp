@@ -12,8 +12,6 @@ namespace
 
 	const char* kChaseAnimName = "CharacterArmature|Walk";
 
-	constexpr float kChaseSpeed = 5.0f;
-
 	constexpr float kFindRange = 750.0f;
 	constexpr float kAttackRange = 200.0f;
 	constexpr float kLerpT = 0.2f;
@@ -62,8 +60,11 @@ void MeleeNormalStateChase::OnUpdate(std::shared_ptr<Camera> camera)
 	dir.y = 0.0f; // 上下方向は無視
 	dir.Normalize();
 	
+	// ステータスから追跡速度を取得
+	float chaseSpeed = meleeNormal->GetStatusComp().m_runSpeed;
+
 	// プレイヤーに向かって移動
-	meleeNormal->GetRigidbody().SetVelo(dir * kChaseSpeed);
+	meleeNormal->GetRigidbody().SetVelo(dir * chaseSpeed);
 	
 	// 進行方向にモデルを回転させる
 	Vector3 velocity = meleeNormal->GetRigidbody().GetVelo();

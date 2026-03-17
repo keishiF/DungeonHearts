@@ -1,14 +1,13 @@
 ﻿#include "MeleeNormal.h"
 
 #include "Actor/Attack/EnemyMeleeWeapon.h"
+#include "MyLib/CharacterStatusLoader.h"
 #include "State/MeleeNormalStateIdle.h"
 #include "State/MeleeNormalStateHit.h"
 #include "State/MeleeNormalStateDead.h"
 
 namespace
 {
-	constexpr float kHp = 3.0f;
-
 	constexpr float kIdleAnimSpeed = 0.5f;
 
 	const char* kIdleAnimName = "CharacterArmature|Idle";
@@ -32,8 +31,7 @@ MeleeNormal::~MeleeNormal()
 
 void MeleeNormal::Init(Vector3& pos, Vector3& rot, Vector3& scale)
 {
-	m_status.m_hp = kHp;
-	m_status.m_maxHp = kHp;
+	m_status = CharacterStatusLoader::GetStatus("EnemyMelee");
 
 	Collidable::Init();
 	m_rigidbody.Init();

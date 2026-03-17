@@ -11,8 +11,6 @@
 
 namespace
 {
-    // 空中での移動速度
-    constexpr float kAirMoveSpeed = 10.0f;
     // アニメーション再生速度
     constexpr float kFallAnimSpeed = 0.5f;
     // アニメーション名
@@ -66,8 +64,10 @@ void PlayerStateFall::OnUpdate(std::shared_ptr<Camera> camera)
     if (moveDir.SqrLength() > 0.0f)
     {
         moveDir.Normalize();
-        finalVelo.x = moveDir.x * kAirMoveSpeed;
-        finalVelo.z = moveDir.z * kAirMoveSpeed;
+        float airMoveSpeed = player->GetStatusComp().m_airSpeed;
+
+        finalVelo.x = moveDir.x * airMoveSpeed;
+        finalVelo.z = moveDir.z * airMoveSpeed;
     }
     else
     {

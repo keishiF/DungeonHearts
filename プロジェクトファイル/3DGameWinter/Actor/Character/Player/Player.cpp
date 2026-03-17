@@ -5,15 +5,13 @@
 #include "Actor/Attack/PlayerWeapon.h"
 #include "Camera/Camera.h"
 #include "MyLib/Input.h"
+#include "MyLib/CharacterStatusLoader.h"
 #include "PlayerState/PlayerStateDead.h"
 #include "PlayerState/PlayerStateHit.h"
 #include "PlayerState/PlayerStateIdle.h"
 
 namespace
 {
-	// ステータス
-	constexpr float kHp = 25.0f;
-
 	// 当たり判定の大きさ
 	// カプセルの半径
 	constexpr float kColRadius = 35.0f;
@@ -43,8 +41,7 @@ Player::~Player()
 
 void Player::Init(Vector3& pos, Vector3& rot, Vector3& scale)
 {
-	m_status.m_hp = kHp;
-	m_status.m_maxHp = kHp;
+	m_status = CharacterStatusLoader::GetStatus("Player");
 
 	Collidable::Init();
 	m_rigidbody.Init();

@@ -12,8 +12,6 @@ namespace
 
 	const char* kMoveAnimName = "CharacterArmature|Fast_Flying";
 
-    // プレイヤーに近づく速度
-    constexpr float kMoveSpeed = 4.0f;
     // プレイヤーとの適切な距離
     constexpr float kIdealHeight = 150.0f;
     
@@ -80,8 +78,11 @@ void FlyNormalStateMove::OnUpdate(std::shared_ptr<Camera> camera)
     Vector3 dir = targetPos - myPos;
     dir.Normalize();
 
+    // ステータスから移動速度を取得（飛行用の airSpeed を優先）
+    float moveSpeed = flyNormal->GetStatusComp().m_airSpeed;
+
     // 移動
-    flyNormal->GetRigidbody().SetVelo(dir * kMoveSpeed);
+    flyNormal->GetRigidbody().SetVelo(dir * moveSpeed);
 
     // 向きの制御
     // プレイヤーの方向を向く（Y軸は無視）

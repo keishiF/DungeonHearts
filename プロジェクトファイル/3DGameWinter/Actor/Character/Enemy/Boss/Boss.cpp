@@ -7,7 +7,7 @@
 
 namespace
 {
-	constexpr float kHp = 1.0f;
+	constexpr float kHp = 20.0f;
 
 	constexpr float kColRadius = 350.0f;
 	constexpr float kColSize = 500.0f;

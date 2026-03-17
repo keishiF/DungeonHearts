@@ -1,13 +1,12 @@
 ﻿#include "FlyNormal.h"
 
+#include "MyLib/CharacterStatusLoader.h"
 #include "State/FlyNormalStateIdle.h"
 #include "State/FlyNormalStateHit.h"
 #include "State/FlyNormalStateDead.h"
 
 namespace
 {
-	constexpr float kHp = 2.0f;
-
 	constexpr float kIdleAnimSpeed = 0.5f;
 
 	const char* kIdleAnimName = "CharacterArmature|Flying_Idle";
@@ -31,8 +30,7 @@ FlyNormal::~FlyNormal()
 
 void FlyNormal::Init(Vector3& pos, Vector3& rot, Vector3& scale)
 {
-	m_status.m_hp = kHp;
-	m_status.m_maxHp = kHp;
+	m_status = CharacterStatusLoader::GetStatus("EnemyFly");
 
 	Collidable::Init();
 	m_rigidbody.Init();

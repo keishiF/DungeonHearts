@@ -13,9 +13,6 @@
 
 namespace
 {
-    // 走り速度
-    constexpr float kRunSpeed = 15.0f;
-
     // アニメーションの再生速度
     constexpr float kRunAnimSpeed = 1.0f;
 
@@ -75,7 +72,11 @@ void PlayerStateRun::OnUpdate(std::shared_ptr<Camera> camera)
     if (moveDir.SqrLength() > 0.0f)
     {
         moveDir.Normalize();
-        player->GetRigidbody().SetVelo(moveDir * kRunSpeed);
+
+        // Status から走行速度を取得（Player に応じた値）
+        float runSpeed = player->GetStatusComp().m_runSpeed;
+        player->GetRigidbody().SetVelo(moveDir * runSpeed);
+        //player->GetRigidbody().SetVelo(moveDir * kRunSpeed);
     }
     else
     {

@@ -18,7 +18,6 @@ namespace
 	// 近接攻撃を開始する距離
 	constexpr float kAttackRange = 600.0f;
 
-	constexpr float kMoveSpeed = 5.0f;
 	constexpr float kLerpT = 0.2f;
 
 	constexpr float kAnimSpeed = 1.0f;
@@ -81,8 +80,11 @@ void BossStateMove::OnUpdate(std::shared_ptr<Camera> camera)
 	dir.y = 0.0f; // 上下方向は無視
 	dir.Normalize();
 
+	// ステータスから移動速度を取得
+	float moveSpeed = boss->GetStatusComp().m_runSpeed;
+
 	// プレイヤーに向かって移動
-	boss->GetRigidbody().SetVelo(dir * kMoveSpeed);
+	boss->GetRigidbody().SetVelo(dir * moveSpeed);
 
 	// 進行方向にモデルを回転させる
 	Vector3 velocity = boss->GetRigidbody().GetVelo();

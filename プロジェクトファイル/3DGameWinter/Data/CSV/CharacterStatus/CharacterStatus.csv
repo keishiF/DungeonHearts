@@ -1,0 +1,5 @@
+﻿Name,HP,Atk,MaxHP,RunSpeed,AirSpeed
+Player,25,1,25,15,8.5
+EnemyMelee,3,2,1,5,
+EnemyFly,1,1,3,4,
+Boss,20,2,20,5,
