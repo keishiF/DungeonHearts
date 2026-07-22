@@ -92,7 +92,7 @@ void Physics::Update()
 			if ((tagA == ObjectTag::PlayerWeapon && (tagB == ObjectTag::Enemy || tagB == ObjectTag::Boss)) ||
 				(tagB == ObjectTag::PlayerWeapon && (tagA == ObjectTag::Enemy || tagA == ObjectTag::Boss)))
 			{
-				HitStopManager::GetInstance().RequestHitStop(2); // 5 frames of hit stop
+				HitStopManager::GetInstance().RequestHitStop(3); // 5 frames of hit stop
 			}
 
 			if (m_playingEffect == -1)
